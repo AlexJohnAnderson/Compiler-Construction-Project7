@@ -33,7 +33,7 @@ private:
 };
 
 enum Register{
-	A, B, C, D, DI
+	A, B, C, D, E, F, DI
 };
 
 class RegUtils{
@@ -44,6 +44,8 @@ public:
 			case B: return "b";
 			case C: return "c";
 			case D: return "d";
+			case E: return "e";
+			case F: return "f";
 			case DI: return "di";
 		}
 	}
@@ -54,6 +56,8 @@ public:
 			case B: return "%rbx";
 			case C: return "%rcx";
 			case D: return "%rdx";
+			case E: return "%r08";
+			case F: return "%r09";
 			case DI: return "%rdi";
 		}
 		throw new InternalError("no such register");
@@ -65,6 +69,8 @@ public:
 			case B: return "%bl";
 			case C: return "%cl";
 			case D: return "%dl";
+			case E: return "%r8b";
+			case F: return "%r9b";
 			case DI: return "%dil";
 		}
 		throw new InternalError("no such register");
@@ -92,8 +98,8 @@ public:
 	}
 	virtual std::string getMovOp(){
 		switch(myWidth){
-			case 1: return "movb";
-			case 8: return "movq";
+			case 1: return "movb ";
+			case 8: return "movq ";
 		}
 
 		throw new InternalError("Bad mov width");

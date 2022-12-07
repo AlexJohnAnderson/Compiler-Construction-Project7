@@ -235,7 +235,7 @@ public:
 		return myFormalTypes;
 	}
 	virtual bool validVarType() const override { return true; }
-	virtual size_t getSize() const override { return 0; }
+	virtual size_t getSize() const override { return 8; }
 
 private:
 	FnType(const TypeList * formalTypesIn, const DataType * retTypeIn)
