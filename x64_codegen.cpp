@@ -22,7 +22,6 @@ void IRProgram::datagenX64(std::ostream& out){
 		out << "str_text:";
 		out << "\t.asciz \"" + cur.second + "\";\n";
 	}
-	out << ".data\n";
 	out << ".globl main\n";
 	for (auto g: globals)
 	{
@@ -62,7 +61,7 @@ void IRProgram::toX64(std::ostream& out){
 void Procedure::allocLocals(){
 	//Allocate space for locals
 	// Iterate over each procedure and codegen it
-	int size = -24;
+	int size = -16;
 	for (auto t : temps)
 	{
 		t->setMemoryLoc(to_string(size));
@@ -117,9 +116,17 @@ void Quad::codegenLabels(std::ostream& out){
 }
 
 void BinOpQuad::codegenX64(std::ostream& out){
-	dst->genStoreVal(out, A);
-	src1->genLoadVal(out, A);
-	src2->genLoadVal(out, A);
+	
+	BinOp op = this->getOp();
+	if(op == ADD64)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addq " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+
 }
 
 void UnaryOpQuad::codegenX64(std::ostream& out){
@@ -270,7 +277,7 @@ void AuxOpd::genLoadVal(std::ostream& out, Register reg){
 }
 
 void AuxOpd::genStoreVal(std::ostream& out, Register reg){
-	out << "movq " << getReg(reg) << "(%rbp), " << myLoc << "\n";
+	out << "movq " << getReg(reg) << ", " << myLoc << "(%rbp)" << "\n";
 }
 void AuxOpd::genLoadAddr(std::ostream& out, Register reg){
 	TODO(Implement me)

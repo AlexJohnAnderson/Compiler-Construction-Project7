@@ -18,7 +18,7 @@ all: $(TESTS)
 		/usr/lib/x86_64-linux-gnu/crti.o \
 		-lc \
 		$*.o \
-		../stdcminusminus.o \
+		../stddrewgon.o \
 		/usr/lib/x86_64-linux-gnu/crtn.o \
 		-o  $*.prog
 	@./$*.prog < $*.in > $*.out; \

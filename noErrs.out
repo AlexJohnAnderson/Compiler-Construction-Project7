@@ -1,0 +1,19 @@
+.data
+.globl main
+glb_main: .quad 0 
+.align 8
+main: pushq %rbp
+movq %rsp, %rbp
+addq $16, %rbp
+subq $16, %rsp
+#Fn body main
+#            [a] := 5
+movq  $5, %rax
+movq %rax, -16(%rbp)
+#            REPORT [a]
+movq -16(%rbp), %rdi
+callq printInt
+#Fn epilogue main
+lbl_0: addq $16, %rsp
+popq %rbp
+retq
