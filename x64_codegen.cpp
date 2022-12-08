@@ -126,6 +126,200 @@ void BinOpQuad::codegenX64(std::ostream& out){
 		dst->genStoreVal(out, B);
 
 	}
+	
+	else if(op == SUB64)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "subq " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	else if(op == DIV64)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "idivq " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	else if(op == MULT64)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "imulq " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	} 
+	else if(op == EQ64)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addq " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	else if(op == NEQ64)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addq " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	else if(op == LT64)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addq " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	else if(op == GT64)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addq " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	else if(op == LTE64)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addq " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+
+	else if(op == GTE64)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addq " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+
+	else if(op == AND64)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addq " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	
+	else if(op == OR64)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addq " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+
+	if(op == ADD8)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addb " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	
+	else if(op == SUB8)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "subb " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	else if(op == DIV8)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "idivb " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	else if(op == MULT8)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "imulb " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	} 
+	else if(op == EQ8)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addb " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	else if(op == NEQ8)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addb " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	else if(op == LT8)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addb " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	else if(op == GT8)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addb " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	else if(op == LTE8)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addb " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+
+	else if(op == GTE8)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addb " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+
+	else if(op == AND8)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addb " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	
+	else if(op == OR8)
+	{
+		src1->genLoadVal(out, A);
+		src2->genLoadVal(out, B);
+		out << "addb " << "%rax, " << "%rbx\n" ;
+		dst->genStoreVal(out, B);
+
+	}
+	
 
 }
 
@@ -166,7 +360,7 @@ void IntrinsicOutputQuad::codegenX64(std::ostream& out){
 	else if (myArg->getWidth() == 1)
 		out << "callq printByte\n";
 	else
-		out << "callq printString";
+		out << "callq printString\n";
 }
 
 void IntrinsicInputQuad::codegenX64(std::ostream& out){
