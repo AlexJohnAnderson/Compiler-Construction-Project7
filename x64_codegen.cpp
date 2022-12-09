@@ -364,10 +364,8 @@ void GotoQuad::codegenX64(std::ostream& out){
 
 void IfzQuad::codegenX64(std::ostream& out){
 	cnd->genLoadVal(out, A);
-	std::cout << cnd->locString();
-
 	out << "cmpq $0, %rax\n";
-	out << "je " << tgt->getName() << "\n";
+	out << "je " << getTarget() << "\n";
 }
 
 void NopQuad::codegenX64(std::ostream& out){
