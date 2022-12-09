@@ -337,6 +337,19 @@ void BinOpQuad::codegenX64(std::ostream& out){
 
 void UnaryOpQuad::codegenX64(std::ostream& out){
 	src->genLoadVal(out, A);
+	if(op == NOT64) {
+		out << "cmpq $0, %rax\n"
+			<< "setz %al\n";
+	} else if (op == NEG64) {
+		out << "negq %rax\n";
+	}
+	else if (op == NOT8) {
+		out << "cmpq $0, %al\n"
+			<< "setz %al\n";
+	}
+	else if (op == NEG8) {
+		out << "negb %al\n";
+	}
 	dst->genStoreVal(out, A);
 }
 
@@ -354,7 +367,7 @@ void IfzQuad::codegenX64(std::ostream& out){
 	std::cout << cnd->locString();
 
 	out << "cmpq $0, %rax\n";
-	out << "je lbl_" << tgt->getName() << "\n";
+	out << "je " << tgt->getName() << "\n";
 }
 
 void NopQuad::codegenX64(std::ostream& out){
