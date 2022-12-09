@@ -1,4 +1,5 @@
 #include <ostream>
+#include <stdlib.h>
 #include "3ac.hpp"
 
 namespace drewgon{
@@ -6,6 +7,7 @@ namespace drewgon{
 void IRProgram::allocGlobals(){
 	//Choose a label for each global
 	//Choose a label for each global
+
 	for (auto g: globals)
 	{
 		SymOpd * globalOpd = g.second;
@@ -13,16 +15,24 @@ void IRProgram::allocGlobals(){
 		const SemSymbol * sym = globalOpd->getSym();
 		memLoc += sym->getName();
 		globalOpd->setMemoryLoc("(" + memLoc + ")");
+		globalOpd->setIsGlobal();
 	}
+
 }
 
 void IRProgram::datagenX64(std::ostream& out){
+	out << ".globl main \n";
+	out << ".data \n";
+	
+	int i = 0;
 	for (auto cur : strings)
 	{
-		out << "str_text:";
-		out << "\t.asciz \"" + cur.second + "\";\n";
+		out << "str_" << i << ":";
+		out << "\t.asciz " << cur.second <<";\n";
+		cur.first->setIsString();
+		i++;
 	}
-	out << ".globl main\n";
+
 	for (auto g: globals)
 	{
 		SymOpd * globalOpd = g.second;
@@ -52,16 +62,19 @@ void IRProgram::toX64(std::ostream& out){
 	allocGlobals();
 	datagenX64(out);
 	// Iterate over each procedure and codegen it
+	out << ".text\n";
 	for (auto proc: *this->procs)
 	{
 		proc->toX64(out);
+		out << "\n";
+		
 	}
 }
 
 void Procedure::allocLocals(){
 	//Allocate space for locals
 	// Iterate over each procedure and codegen it
-	int size = -16;
+	int size = -24;
 	for (auto t : temps)
 	{
 		t->setMemoryLoc(to_string(size));
@@ -137,17 +150,18 @@ void BinOpQuad::codegenX64(std::ostream& out){
 	}
 	else if(op == DIV64)
 	{
-		src1->genLoadVal(out, A);
-		src2->genLoadVal(out, B);
-		out << "idivq " << "%rbx\n" ;
-		dst->genStoreVal(out, A);
+
+		src1->genLoadVal(out, D);
+		src2->genLoadVal(out, A);
+		out << "movq $0, %rdx\nidivq %rbx\nmovq %rax, %rbx\n";
+		dst->genStoreVal(out, B);
 
 	}
 	else if(op == MULT64)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "imulq " << "%rbx\n" ;
+		out << "imulq %rbx, %rax\n";
 		dst->genStoreVal(out, A);
 
 	} 
@@ -174,7 +188,7 @@ void BinOpQuad::codegenX64(std::ostream& out){
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
 		out << "cmpq " << "%rbx, " << "%rax\n";
-		out << "addq " << "%al\n" ;
+		out << "setl " << "%al\n" ;
 		dst->genStoreVal(out, A);
 
 	}
@@ -183,7 +197,7 @@ void BinOpQuad::codegenX64(std::ostream& out){
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
 		out << "cmpq " << "%rbx, " << "%rax\n";
-		out << "addq " << "%al\n" ;
+		out << "setg " << "%al\n" ;
 		dst->genStoreVal(out, A);
 
 	}
@@ -365,7 +379,7 @@ void GotoQuad::codegenX64(std::ostream& out){
 void IfzQuad::codegenX64(std::ostream& out){
 	cnd->genLoadVal(out, A);
 	out << "cmpq $0, %rax\n";
-	out << "je " << getTarget() << "\n";
+	out << "je " << tgt->getName() << "\n";
 }
 
 void NopQuad::codegenX64(std::ostream& out){
@@ -373,27 +387,25 @@ void NopQuad::codegenX64(std::ostream& out){
 }
 
 void IntrinsicMayhemQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	out << "callq mayhem\n";
+    myDst->genStoreVal(out, A);
 }
 
 void IntrinsicOutputQuad::codegenX64(std::ostream& out){
 	myArg->genLoadVal(out, DI);
+	if(myArg->getIsString()){
+		out << "callq printString\n";
+	}
 	if (myArg->getWidth() == 8){
 		out << "callq printInt\n";
-		std::cout << "\n";
-	}
-	else if (myArg->getWidth() == 1){
-		out << "callq printByte\n";
-		std::cout << "\n";
 	}
 	else{
-		out << "callq printString\n";
-		std::cout << "\n";
+		out << "callq printByte\n";
 	}
 }
 
 void IntrinsicInputQuad::codegenX64(std::ostream& out){
-	myArg->genStoreVal(out, A);
+	myArg->genStoreVal(out, DI);
 	if (myArg->getWidth() == 8)
 	out << "callq writeInt\n";
 	else if (myArg->getWidth() == 1)
@@ -403,7 +415,7 @@ void IntrinsicInputQuad::codegenX64(std::ostream& out){
 }
 
 void CallQuad::codegenX64(std::ostream& out){
-	out << "call " << callee->getName() << "\n";
+	out << "callq " << "fun_" << callee->getName() << "\n";
 }
 
 void EnterQuad::codegenX64(std::ostream& out){
@@ -423,7 +435,7 @@ void SetArgQuad::codegenX64(std::ostream& out){
 		if (index == 1)
 			opd->genLoadVal(out, DI);
 		else if (index == 2)
-			opd->genLoadVal(out, A);
+			opd->genLoadVal(out, SI);
 		else if (index == 3)
 			opd->genLoadVal(out, D);
 		else if (index == 4)
@@ -457,23 +469,32 @@ void LocQuad::codegenX64(std::ostream& out){
 
 void SymOpd::genLoadVal(std::ostream& out, Register reg){
 	std::string output = "";
-		if (this->getWidth() == 1)
-		{
-			if (this->locString() != "true" && this->locString() != "false")
-			{
-				char var = this->valString()[1];
-				int ascii = int(var);
-				output = to_string(ascii);
-			}
-		}
 
-		out << "movq " << myLoc << "(%rbp), " << getReg(reg) << "\n";
+		if (this->getIsString())
+		{
+			char var = this->valString()[1];
+			int ascii = int(var);
+			output = to_string(ascii);
+		}
+		
+		if(this->getIsGlobal()){
+			out << getMovOp() << myLoc << ", " << getReg(reg) << "\n";
+		}
+		else{
+			out << getMovOp() << myLoc << "(%rbp), " << getReg(reg) << "\n";
+		}
 		output = myLoc;
 }
 
 void SymOpd::genStoreVal(std::ostream& out, Register reg){
 	std::string loc = this->getMemoryLoc();
-	out << getMovOp() << getReg(reg) << ", " << loc << "(%rbp)\n";
+	if(this->getIsGlobal()){
+		out << getMovOp() << getReg(reg) << ", " << loc << "\n";
+	}
+	else{
+		out << getMovOp() << getReg(reg) << ", " << loc << "(%rbp)\n";
+	}
+	
 }
 
 void SymOpd::genLoadAddr(std::ostream& out, Register reg) {
@@ -493,17 +514,17 @@ void AuxOpd::genLoadVal(std::ostream& out, Register reg){
 				out << this->getMovOp() << output << ", " << getReg(reg) << "\n";
 			}
 			else
-				out << this->getMovOp() << myLoc << "(%rbp), " << getReg(reg) << "\n";
+				out << this->getMovOp() << getMemoryLoc() << "(%rbp), " << getReg(reg) << "\n";
 		}
 		else
-			out << this->getMovOp() << myLoc << "(%rbp), " << getReg(reg) << "\n";
+			out << this->getMovOp() << getMemoryLoc() << "(%rbp), " << getReg(reg) << "\n";
 }
 
 void AuxOpd::genStoreVal(std::ostream& out, Register reg){
 	out << "movq " << getReg(reg) << ", " << myLoc << "(%rbp)" << "\n";
 }
 void AuxOpd::genLoadAddr(std::ostream& out, Register reg){
-	TODO(Implement me)
+	out << getMovOp() << getMemoryLoc() << '\n';
 }
 
 void AddrOpd::genStoreVal(std::ostream& out, Register reg){

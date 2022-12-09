@@ -33,7 +33,7 @@ private:
 };
 
 enum Register{
-	A, B, C, D, E, F, DI
+	A, B, C, D, E, F, DI, SI
 };
 
 class RegUtils{
@@ -46,6 +46,7 @@ public:
 			case D: return "d";
 			case E: return "e";
 			case F: return "f";
+			case SI: return "si";
 			case DI: return "di";
 		}
 	}
@@ -58,6 +59,7 @@ public:
 			case D: return "%rdx";
 			case E: return "%r08";
 			case F: return "%r09";
+			case SI: return "%rsi";
 			case DI: return "%rdi";
 		}
 		throw new InternalError("no such register");
@@ -71,6 +73,7 @@ public:
 			case D: return "%dl";
 			case E: return "%r8b";
 			case F: return "%r9b";
+			case SI: return "%bil";
 			case DI: return "%dil";
 		}
 		throw new InternalError("no such register");
@@ -87,6 +90,10 @@ public:
 	virtual void genStoreAddr(std::ostream& out, Register reg) = 0;
 	virtual void genLoadVal(std::ostream& out, Register reg) = 0;
 	virtual void genStoreVal(std::ostream& out, Register reg) = 0;
+	bool getIsGlobal() { return isGlobal; }
+	void setIsGlobal() { isGlobal = true; }
+	bool getIsString() { return isString; }
+	void setIsString() { isString = true; }
 	static size_t width(const DataType * type){
 		if (const BasicType * basic = type->asBasic()){
 			return basic->getSize();
@@ -114,6 +121,8 @@ public:
 	virtual std::string getMemoryLoc() = 0;
 private:
 	size_t myWidth;
+	bool isGlobal;
+	bool isString;
 };
 
 class SymOpd : public Opd{
@@ -139,6 +148,9 @@ public:
 	}
 	virtual std::string getMemoryLoc() override{
 		return myLoc;
+	}
+	std::string opdX64Repr() { 
+		return getIsGlobal() ? "(" + getMemoryLoc() + ")" : getMemoryLoc(); 
 	}
 private:
 	//Private Constructor
