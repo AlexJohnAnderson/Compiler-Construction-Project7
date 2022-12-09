@@ -150,12 +150,10 @@ void BinOpQuad::codegenX64(std::ostream& out){
 	}
 	else if(op == DIV64)
 	{
-
 		src1->genLoadVal(out, D);
 		src2->genLoadVal(out, A);
 		out << "movq $0, %rdx\nidivq %rbx\nmovq %rax, %rbx\n";
 		dst->genStoreVal(out, B);
-
 	}
 	else if(op == MULT64)
 	{
@@ -415,7 +413,15 @@ void IntrinsicInputQuad::codegenX64(std::ostream& out){
 }
 
 void CallQuad::codegenX64(std::ostream& out){
-	out << "callq " << "fun_" << callee->getName() << "\n";
+	if(callee->getDataType()->asFn())
+	{
+		out << "movq " << "(%rbp), %rax\n";
+		out << "callq " << "*rax" << "\n"; 
+	}
+	else{
+		out << "callq " << "fun_" << callee->getName() << "\n";
+	}
+	
 }
 
 void EnterQuad::codegenX64(std::ostream& out){

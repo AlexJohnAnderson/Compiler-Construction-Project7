@@ -29,7 +29,5 @@ int v(int a, int b, int c, int d, bool e, bool f, bool g, int i){
 }
 
 int main(){
- fn()-> int func;
- func = main;
- output func();
+ output("hello world");
 }

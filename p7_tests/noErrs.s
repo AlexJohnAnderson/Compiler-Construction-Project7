@@ -1,5 +1,6 @@
 .globl main 
 .data 
+str_0:	.asciz "hello world";
 glb_a: .quad 0 
 glb_b: .quad 0 
 glb_c: .quad 0 
@@ -23,7 +24,7 @@ subq $16, %rsp
 #            getarg 2 [k]
 #            [a] := 5
 movq  $5, %rax
-movq %rax, -24(%rbp)
+movq %rax, -24
 #            [k] := 1
 movq  $1, %rax
 movq %rax, -32(%rbp)
@@ -32,23 +33,23 @@ movq -32(%rbp), %rax
 cmpq $0, %rax
 je lbl_1
 #            [a] := [a] ADD64 1
-movq -24(%rbp), %rax
+movq -24, %rax
 movq  $1, %rbx
 addq %rbx, %rax
-movq %rax, -24(%rbp)
+movq %rax, -24
 #            goto lbl_2
 jmp lbl_2
 lbl_1: #lbl_1:      nop
 nop
 #            [a] := [a] SUB64 1
-movq -24(%rbp), %rax
+movq -24, %rax
 movq  $1, %rbx
 subq %rbx, %rax
-movq %rax, -24(%rbp)
+movq %rax, -24
 lbl_2: #lbl_2:      nop
 nop
 #            setret [a]
-movq -24(%rbp), %rax
+movq -24, %rax
 #            goto lbl_0
 jmp lbl_0
 #Fn epilogue fun
@@ -91,20 +92,14 @@ retq
 main: pushq %rbp
 movq %rsp, %rbp
 addq $16, %rbp
-subq $16, %rsp
+subq $0, %rsp
 #Fn body main
-#            [func] := [main]
-movq (glb_main), %rax
-movq %rax, -32(%rbp)
-#            call func
-callq fun_func
-#            getret [tmp0]
-movq %rax, -24(%rbp)
-#            REPORT [tmp0]
-movq -24(%rbp), %rdi
+#            REPORT str_0
+movq  $str_0, %rdi
+callq printString
 callq printInt
 #Fn epilogue main
-lbl_5: addq $16, %rsp
+lbl_5: addq $0, %rsp
 popq %rbp
 retq
 
