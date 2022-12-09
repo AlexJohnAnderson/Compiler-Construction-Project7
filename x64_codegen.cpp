@@ -122,8 +122,8 @@ void BinOpQuad::codegenX64(std::ostream& out){
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addq " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "addq " << "%rbx, " << "%rax\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	
@@ -131,64 +131,69 @@ void BinOpQuad::codegenX64(std::ostream& out){
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "subq " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "subq " << "%rbx, " << "%rax\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	else if(op == DIV64)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "idivq " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "idivq " << "%rbx\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	else if(op == MULT64)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "imulq " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "imulq " << "%rbx\n" ;
+		dst->genStoreVal(out, A);
 
 	} 
 	else if(op == EQ64)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addq " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "cmpq " << "%rbx, " << "%rax\n";
+		out << "sete " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	else if(op == NEQ64)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addq " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "cmpq " << "%rbx, " << "%rax\n";
+		out << "setne " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	else if(op == LT64)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addq " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "cmpq " << "%rbx, " << "%rax\n";
+		out << "addq " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	else if(op == GT64)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addq " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "cmpq " << "%rbx, " << "%rax\n";
+		out << "addq " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	else if(op == LTE64)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addq " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "cmpq " << "%rbx, " << "%rax\n";
+		out << "setle " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 
@@ -196,8 +201,9 @@ void BinOpQuad::codegenX64(std::ostream& out){
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addq " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "cmpq " << "%rbx, " << "%rax\n";
+		out << "setge " << "%al\n";
+		dst->genStoreVal(out, A);
 
 	}
 
@@ -205,8 +211,8 @@ void BinOpQuad::codegenX64(std::ostream& out){
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addq " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "andq " << "%rbx, " << "%rax\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	
@@ -214,8 +220,8 @@ void BinOpQuad::codegenX64(std::ostream& out){
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addq " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "orq " << "%rax, " << "%rax\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 
@@ -223,8 +229,8 @@ void BinOpQuad::codegenX64(std::ostream& out){
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addb " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "addb " << "%bl, " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	
@@ -232,64 +238,69 @@ void BinOpQuad::codegenX64(std::ostream& out){
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "subb " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "subb " << "%bl, " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	else if(op == DIV8)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "idivb " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "idivb " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	else if(op == MULT8)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "imulb " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "imulb " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	} 
 	else if(op == EQ8)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addb " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "cmpq " << "%bl, " << "%al\n";
+		out << "sete " << "%al\n";
+		dst->genStoreVal(out, A);
 
 	}
 	else if(op == NEQ8)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addb " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "cmpq " << "%bl, " << "%al\n";
+		out << "setne " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	else if(op == LT8)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addb " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "cmpq " << "%bl, " << "%al\n";
+		out << "setl " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	else if(op == GT8)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addb " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "cmpq " << "%bl, " << "%al\n";
+		out << "setg " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	else if(op == LTE8)
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addb " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "cmpq " << "%bl, " << "%al\n";
+		out << "setle " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 
@@ -297,8 +308,9 @@ void BinOpQuad::codegenX64(std::ostream& out){
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addb " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "cmpq " << "%bl, " << "%al\n";
+		out << "setge " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 
@@ -306,8 +318,8 @@ void BinOpQuad::codegenX64(std::ostream& out){
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addb " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "andb " << "%bl, " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	
@@ -315,8 +327,8 @@ void BinOpQuad::codegenX64(std::ostream& out){
 	{
 		src1->genLoadVal(out, A);
 		src2->genLoadVal(out, B);
-		out << "addb " << "%rax, " << "%rbx\n" ;
-		dst->genStoreVal(out, B);
+		out << "orb " << "%bl, " << "%al\n" ;
+		dst->genStoreVal(out, A);
 
 	}
 	
@@ -355,12 +367,18 @@ void IntrinsicMayhemQuad::codegenX64(std::ostream& out){
 
 void IntrinsicOutputQuad::codegenX64(std::ostream& out){
 	myArg->genLoadVal(out, DI);
-	if (myArg->getWidth() == 8)
+	if (myArg->getWidth() == 8){
 		out << "callq printInt\n";
-	else if (myArg->getWidth() == 1)
+		std::cout << "\n";
+	}
+	else if (myArg->getWidth() == 1){
 		out << "callq printByte\n";
-	else
+		std::cout << "\n";
+	}
+	else{
 		out << "callq printString\n";
+		std::cout << "\n";
+	}
 }
 
 void IntrinsicInputQuad::codegenX64(std::ostream& out){
